@@ -1,0 +1,40 @@
+* {
+    font-family: "Delicious Handrawn", cursive;
+    font-size: x-large;
+}
+
+.cajaForm {
+    border-radius: 20px;
+    width: 350px;
+    margin: 10px;
+    margin-bottom: 20px;
+    border: 1px solid var(--cardRosaIntenso);
+    background-color: var(--cardRosaIntenso);
+}
+
+input, textarea {
+    background-color: transparent;
+    border-color: var(--bordeRosaClaro);
+    border-style: solid;
+    margin: 3px;
+    width: 230px;
+    color: var(--letraRosaOscuro);
+}
+
+label {
+    vertical-align: top;
+}
+
+.form {
+    color: var(--letrasClaro);
+    text-align: right;
+    margin: 10px;
+}
+
+.botonConf {
+    margin: 15px;
+    background-color: transparent;
+    border-color: var(--bordeRosaClaro);
+    color: var(--letraRosaOscuro);
+}
+
