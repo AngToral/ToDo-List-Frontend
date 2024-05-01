@@ -17,7 +17,7 @@ export const Card = ({id, title, hash, due, onDelete, onEdit, onChangeStatus, st
             <div className="card">
                 <p className='titulo'>{title}</p>
                 <p className='tarea' >{hash}</p>
-                <p className='due'>{due}</p> <p className='vencida'>{new Date(due) <= new Date() ? "¡Vencida!" : null}</p>
+                <p className='due'>{new Date (due).toISOString().split("T")[0]}</p> <p className='vencida'>{new Date(due) <= new Date() ? "¡Vencida!" : null}</p>
             </div>
 
             <div className='cajaAction'>

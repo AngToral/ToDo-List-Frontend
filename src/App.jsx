@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { Card } from './Components/Card'
 import './Form.css'
 import { Welcome } from './Components/Welcome'
 import Swal from 'sweetalert2'
+import taskApi from './apiService/taskApi'
 
 // const tarea = [
 //   {
@@ -27,6 +28,17 @@ function App() {
   const [filtering, setFiltering] = useState(false)
   const [filteringCards, setFilteringCards] = useState(null)
 
+  const [dummy, refresh] = useState(false)
+  
+  const getTasks = async () => {
+    const tarea = await taskApi.getAllTasks();
+    setCards(tarea)
+  }
+
+  useEffect(() => {
+    getTasks()
+  }, [dummy])
+
   const editarTask = (id) => {
     const newList = cards.find(tarea => tarea.id === id);
     setOpen(!open)
@@ -49,7 +61,7 @@ function App() {
       setOpen(false)
     } else {
       const todayDate = new Date().toISOString().split("T")[0]
-      const newTask = {id: crypto.randomUUID(), date: todayDate, title, hash, due, status: "Pendiente"}
+      const newTask = {date: todayDate, title, hash, due, status: "Pendiente"}
       const newList = cards.concat(newTask);
       if (title === "" || due ==="" || hash === "" ) return;
       setCards(newList)
@@ -191,8 +203,8 @@ const completas = cards.filter((element) => ((element.status) === "¡Completada!
           onDelete={eliminarTask}
           onEdit={editarTask}
           onChangeStatus={cambiarEstado}
-          key={tarea.id}
-          id={tarea.id}
+          key={tarea._id}
+          id={tarea._id}
           status={tarea.status}
           date={tarea.date}
           title={tarea.title}
@@ -207,8 +219,8 @@ const completas = cards.filter((element) => ((element.status) === "¡Completada!
           onDelete={eliminarTask}
           onEdit={editarTask}
           onChangeStatus={cambiarEstado}
-          key={tarea.id}
-          id={tarea.id}
+          key={tarea._id}
+          id={tarea._id}
           status={tarea.status}
           date={tarea.date}
           title={tarea.title}

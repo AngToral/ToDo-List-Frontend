@@ -79,11 +79,14 @@
     text-align: center;
     text-decoration:underline;
     margin: 10px;
+    line-height: 20px;
 }
 
 .tarea {
     height: 50px;
     line-height: 20px;
+    margin: 10px;
+    margin-left: 0px;
 }
 
 .green {
@@ -110,3 +113,6 @@
     display: inline;
 }
 
+.due {
+    line-height: 23px;
+}
