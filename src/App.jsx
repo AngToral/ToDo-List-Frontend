@@ -6,17 +6,6 @@ import { Welcome } from './Components/Welcome'
 import Swal from 'sweetalert2'
 import taskApi from './apiService/taskApi'
 
-// const tarea = [
-//   {
-//     id:"0bjh",
-//     date: "2023-01-08", 
-//     status: "¡Completada!",
-//     title: 'Perros 1',
-//     hash: 'Bañar a los perros',
-//     due: "2023-05-08",
-// }
-// ]
-
 function App() {
 
   const [cards, setCards] = useState([])
@@ -31,45 +20,42 @@ function App() {
   const [dummy, refresh] = useState(false)
   
   const getTasks = async () => {
-    const tarea = await taskApi.getAllTasks();
-    setCards(tarea)
+    const tareas = await taskApi.getAllTasks();
+    setCards(tareas)
   }
 
   useEffect(() => {
     getTasks()
   }, [dummy])
 
-  const editarTask = (id) => {
-    const newList = cards.find(tarea => tarea.id === id);
-    setOpen(!open)
-    setTitle(newList.title)
-    setDue(newList.due)
-    setHash(newList.hash)
-    setEditId(id)
-  }
-
-  const addTask = () => {
+  const addTask = async () => {
     if (editId !== null) {
-      const newList = cards.find(tarea => tarea.id === editId);
-      newList.title = title
+      await taskApi.updateTask(editId,{title, due, hash})
+      refresh(!dummy)
       setTitle("")
-      newList.due = due
       setDue("")
-      newList.hash = hash
       setHash("")
       setEditId(null)
       setOpen(false)
-    } else {
-      const todayDate = new Date().toISOString().split("T")[0]
-      const newTask = {date: todayDate, title, hash, due, status: "Pendiente"}
-      const newList = cards.concat(newTask);
-      if (title === "" || due ==="" || hash === "" ) return;
-      setCards(newList)
-      setTitle("")
-      setDue("")
-      setHash("")
-      setOpen(false)
     }
+    else {
+    if (title === "" || due ==="" || hash === "" ) return;
+    await taskApi.addTask({title, due, hash})
+    refresh(!dummy)
+    setTitle("")
+    setDue("")
+    setHash("")
+    setOpen(false)
+    }
+  };
+
+  const editarTask = async (idCard) => {
+    const tarea = await taskApi.getOneTask(idCard);
+    setOpen(!open)
+    setTitle(tarea.title)
+    setDue(tarea.due)
+    setHash(tarea.hash)
+    setEditId(idCard)
   }
 
   const eliminarForm = () => {
@@ -78,9 +64,10 @@ function App() {
     setHash("")
   }
 
-const eliminarTask = (idCard) => {
-  const taskToRemoveTitle = cards.find(tarea => tarea.id === idCard).title
-  const newList = cards.filter(tarea => tarea.id !== idCard);
+const eliminarTask = async (idCard) => {
+  const tarea = await taskApi.getOneTask(idCard);
+  const taskToRemoveTitle = tarea.title
+  console.log(tarea)
   Swal.fire({
     title: "¿Seguro que deseas eliminar la tarea?",
     text: `${taskToRemoveTitle}`,
@@ -88,27 +75,30 @@ const eliminarTask = (idCard) => {
     showDenyButton: true,
     confirmButtonText: "Sí",
     denyButtonText: `No`
-  }).then(respuesta=>{
+  }).then( async respuesta=>{
     if(respuesta.isConfirmed) {
       Swal.fire({
         title: "Haz eliminado corretamente la tarea",
         icon: "success"})
-        setCards(newList)
-        setFilteringCards(newList)
+        await taskApi.deleteTask(idCard)
+        refresh(!dummy)
     }
   })
 }
 
-const cambiarEstado = (idCard, estado) => {
-  setCards(prevCards => {
-    return prevCards.map(tarea => {
-      if (tarea.id === idCard) {
-        return {...tarea, status: estado};
-      } else {
-        return tarea;
-      }
-    });
-  });
+const cambiarEstado = async (idCard, estado) => {
+    if (estado === "¡Completada!") {
+      await taskApi.okTask(idCard)
+      refresh(!dummy)
+    }
+    if (estado === "En Proceso...") {
+      await taskApi.progTask(idCard)
+      refresh(!dummy)
+    }
+    if (estado === "Pendiente") {
+      await taskApi.pendTask(idCard)
+      refresh(!dummy)
+    }
 }
 
 const filteredCards = (e) => {
